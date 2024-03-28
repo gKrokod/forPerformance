@@ -31,9 +31,12 @@ ver4 =( ver4' !! ) . fromIntegral
 ver4' :: [Integer]
 ver4' = 0 : zipWith (+) (map (*2) ver4') ([3,6..])
 
-ver5 :: Integer -> Integer -> Integer -> Integer
-ver5 (-1) acc k = acc
-ver5 n acc k = ver5 (pred n) (2 * acc + fromIntegral (3 * (k - n))) k 
+ver5 :: Integer -> Integer
+ver5 k = ver5' k 0 k
+
+ver5' :: Integer -> Integer -> Integer -> Integer
+ver5' (-1) acc k = acc
+ver5' n acc k = ver5' (pred n) (2 * acc + fromIntegral (3 * (k - n))) k 
 
 ver6 :: Integer -> Integer 
 ver6 = (\(a,b) -> 3 * (a + b)) . ((iterate (\(a,b) -> (a + b, 1 + 2 * b)) (0,1)) !!) . pred . fromIntegral
