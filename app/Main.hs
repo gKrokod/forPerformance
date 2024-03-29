@@ -4,6 +4,7 @@ module Main (main) where
 import Test.Tasty.Bench
 import Lib
 import Data.Char (digitToInt)
+import Numeric
 
 testA, testB, testC, testD :: Integer
 testA = 5 
@@ -68,6 +69,57 @@ ver10 =( ver10' !! )
 ver10' :: [Int]
 ver10' = 0 : zipWith (\a b -> mod (a + b) (1000000007)) (map (*2) ver10') ([3,6..])
 
+ver11 :: Int -> Int
+ver11 n = fromIntegral $ mod (helper n) (10^9 + 7)
+
+helper :: Int -> Integer
+helper n = 3 * (-2 + 2^(1 + k) - k)
+  where k = toInteger n
+
+ver12 :: Int -> Int
+ver12 n = fromIntegral $ mod (helper2 n) (10^9 + 7)
+
+helper2 :: Int -> Integer
+helper2 n = 3 * (-2 + (fastPower 2 (1 + n)) - k)
+  where k = toInteger n
+
+fastPower :: Int -> Int -> Integer
+fastPower a m = helper ms (toInteger a) 1
+  where ms = map digitToInt $ showBin m ""
+        helper :: [Int] -> Integer ->  Integer -> Integer
+        helper [] a acc = acc
+        helper (1 : ms) a acc = helper ms a (a * acc^2)
+        helper (0 : ms) a acc = helper ms a (acc^2)
+        
+
+ver13 :: Int -> Int
+ver13 n = fromIntegral $ mod (helper3 n) (10^9 + 7)
+
+fp2 :: Integer -> Int -> Integer
+fp2 a 0 = 1
+fp2 a 1 = a
+fp2 a m | even m = fp2 (a^2) (div m 2)
+        | odd m = a * fp2 (a^2) (div (pred m) 2)
+
+modo :: Int -> Int
+modo = flip mod (10^9 + 7)
+      
+helper3 :: Int -> Integer
+helper3 n = 3 * (-2 + (fp2 2 (1 + n)) - k)
+  where k = toInteger n
+
+ver14 :: Int -> Int
+ver14 n =  mod (helper4 n) (10^9 + 7)
+
+helper4 :: Int -> Int
+helper4 n = 3 * (-2 + (fp3 2 (1 + n)) - n)
+  where k = toInteger n
+
+fp3 :: Int -> Int -> Int
+fp3 a 0 = 1
+fp3 a 1 = a
+fp3 a m | even m = fp3 (modo $ a^2) (div m 2)
+        | odd m = modo $ a * fp3 (modo $ a^2) (div (pred m) 2)
 main :: IO ()
 main =
 	defaultMain
@@ -108,8 +160,10 @@ main =
      bgroup
         ("x func for Int " ++ show testD)
         [ bench "test ver8" $ nf ver8 (fromIntegral testD),
-         bench "test ver10" $ nf ver10 (fromIntegral testD)]
-          -- bench "test ver9" $ nf ver9 (fromIntegral testD)]
+         bench "test ver10" $ nf ver10 (fromIntegral testD),
+          bench "test ver11" $ nf ver11 (fromIntegral testD),
+          bench "test ver13" $ nf ver13 (fromIntegral testD),
+          bench "test ver14" $ nf ver14 (fromIntegral testD)]
     ]
 
 
